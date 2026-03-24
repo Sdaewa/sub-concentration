@@ -9,10 +9,7 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("Who Are These People?")
-    st.markdown(
-        "The concentration chart shows a few users dominate. This tab shows **who**. "
-        "Below that, check if the same accounts pop up across multiple subs."
-    )
+    st.caption("Leaderboard for one sub, then who posts in 2+ tracked subs.")
     sub_lb = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="lb_sub")
     days_lb = st.slider("Days to look back", 7, 180, 30, key="lb_days")
     df_lb = helpers.posts_last_days(conn, sub_lb, days_lb, today)
@@ -32,11 +29,7 @@ def render(conn, today: str, cm: dict) -> None:
             st.plotly_chart(fig_lb, width="stretch")
 
     st.divider()
-    st.subheader("Same Accounts, Multiple Subreddits")
-    st.markdown(
-        "Are the same people flooding more than one subreddit? "
-        "This table shows users who posted in 2+ of the tracked subs."
-    )
+    st.subheader("Same accounts, multiple subs")
     days_overlap = st.slider("Days to check", 7, 180, 30, key="overlap_days")
     df_all = helpers.all_posts_last_days(conn, days_overlap, today)
     if df_all.empty:

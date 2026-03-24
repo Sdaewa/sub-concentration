@@ -4,4 +4,4 @@ data/*.db
 *.csv
 .venv/
 .env
-.streamlit/
+.streamlit/secrets.toml

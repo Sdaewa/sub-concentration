@@ -23,7 +23,6 @@ def configure_page():
         "Removal data is a snapshot, not live. "
         "A post might get restored after being flagged removed, or vice versa. "
         "Treat these as estimates, not hard facts.",
-        icon="ℹ️",
     )
 
 
@@ -37,6 +36,15 @@ def init_scheduler():
 
 @st.cache_resource
 def setup_db():
+    import os
+
+    try:
+        if "DATABASE_URL" in st.secrets:
+            os.environ["DATABASE_URL"] = str(st.secrets["DATABASE_URL"])
+        if "DB_PATH" in st.secrets:
+            os.environ["OBSERVATORY_DB_PATH"] = str(st.secrets["DB_PATH"])
+    except Exception:
+        pass
     c = db.get_connection()
     db.init_db(c)
     return c

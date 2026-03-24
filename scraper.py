@@ -83,8 +83,7 @@ def scrape_day(subreddit, date_str, conn):
 
 def get_scraped_dates(conn):
     """Dates already in daily_metrics"""
-    cur = conn.execute("SELECT DISTINCT date FROM daily_metrics")
-    return {row[0] for row in cur.fetchall()}
+    return db.get_scraped_dates(conn)
 
 
 def backfill(days=None, conn=None):

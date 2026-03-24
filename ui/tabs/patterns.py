@@ -10,11 +10,7 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("When Do People Post?")
-    st.markdown(
-        "Humans follow sleep schedules. Bots don't. "
-        "If a subreddit gets a perfectly even spread of posts at 3am and 3pm, "
-        "something's off. This shows posting volume by hour (UTC) and day of week."
-    )
+    st.caption("Hour x weekday heatmap (UTC). Weirdly flat can mean automation.")
     sub_hw = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="hw_sub")
     days_hw = st.slider("Days to look back", 7, 180, 30, key="hw_days")
     start_hw = helpers.utc_start_date(days_hw)
@@ -32,8 +28,7 @@ def render(conn, today: str, cm: dict) -> None:
         )
         st.plotly_chart(fig_hw, width="stretch")
 
-    st.subheader("Compare: side by side")
-    st.caption("Pick a second subreddit to compare posting schedules.")
+    st.subheader("Compare two subs")
     sub_hw2 = st.selectbox("Compare with", [s for s in config.SUBREDDITS if s != sub_hw], key="hw_sub2")
     df_hw2 = db.get_posts(sub_hw2, start_hw, today, conn)
     if df_hw2.empty:

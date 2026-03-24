@@ -10,10 +10,9 @@ from ui import helpers, layout
 
 def render(conn, today: str, cm: dict) -> None:
     st.header("What Gets Deleted?")
-    st.markdown(
-        "Not all removals are the same. **Mod removed** = human moderator. "
-        "**Automod** = automated rule. **Reddit filter** = sitewide spam. "
-        "**Self-deleted** = user removed their own post (excluded from removal %)."
+    st.caption(
+        "Mod / automod / Reddit filter vs self-delete. "
+        "Removal % ignores self-deletes."
     )
     sub_del = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="del_sub")
     days_del = st.slider("Days to look back", 7, 180, 30, key="del_days")
@@ -64,8 +63,7 @@ def render(conn, today: str, cm: dict) -> None:
         )
         st.plotly_chart(fig_r, width="stretch")
 
-    st.subheader("Do top posters get protected?")
-    st.caption("If top posters get less removed, mods may be clearing the way for them.")
+    st.subheader("Top 10 vs everyone else")
     excl = df_del[df_del["removal_reason"] != "deleted"]
     if not excl.empty:
         top10 = excl.groupby("author").size().nlargest(10).index
@@ -76,4 +74,3 @@ def render(conn, today: str, cm: dict) -> None:
             x="Group", y="% removed", text_auto=".1f",
             title="Who gets deleted more? (excluding self-deletes)",
         ), width="stretch")
-    st.caption("Source: Arctic Shift independent archive.")

@@ -5,8 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
-os.environ["DB_PATH_OVERRIDE"] = ":memory:"
-
 import db
 
 YESTERDAY = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")

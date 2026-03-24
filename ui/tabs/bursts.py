@@ -10,8 +10,7 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("Suspiciously Fast Posting")
-    st.markdown("Normal people don't post 3+ times in 10 minutes. "
-                "When someone does, it could be a bot or a coordinated campaign.")
+    st.caption("3+ posts in 10 min counts as a burst; lots of bursts per day is the red flag.")
     sub_pick = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="burst_sub")
     days_back = st.slider("How many days to look back", 1, 180, 7, key="burst_days")
     df_posts = helpers.posts_last_days(conn, sub_pick, days_back, today)

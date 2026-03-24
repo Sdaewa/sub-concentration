@@ -7,7 +7,7 @@ def render(conn, today: str, cm: dict) -> None:
     _ = today
     _ = cm
     st.header("Download the Raw Data")
-    st.markdown("Do your own analysis. Open in Excel, Google Sheets, or any tool.")
+    st.caption("CSV dumps of `daily_metrics` and `posts_raw`.")
     c1, c2 = st.columns(2)
     c1.markdown("**Daily summary** - one row per subreddit per day.")
     c1.download_button("Download daily summary", db.export_csv("daily_metrics", conn),

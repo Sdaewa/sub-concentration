@@ -10,11 +10,7 @@ from ui import layout
 
 def render(conn, today: str, cm: dict) -> None:
     st.header("Who's Actually Posting?")
-    st.markdown(
-        "In a healthy subreddit, posts come from lots of different people. "
-        "When just 2-3 users make up half the posts, the 'community' is really "
-        f"just a few people's megaphone. Days with < {config.MIN_POSTS} posts excluded."
-    )
+    st.caption(f"Top-N share of daily posts per sub. Days under {config.MIN_POSTS} posts dropped.")
     df_m = layout.load_metrics(conn)
     if df_m.empty:
         st.info("No data yet. Click **Collect Fresh Data** or **Backfill 6 Months**.")
@@ -70,11 +66,8 @@ def render(conn, today: str, cm: dict) -> None:
         fig2.update_traces(textposition="outside", textfont_size=10)
         st.plotly_chart(fig2, width="stretch")
 
-    st.subheader("Does concentration predict removals?")
-    st.caption(
-        "Each dot is one subreddit on one day. "
-        "If dots trend up-right, high concentration and high removal go together."
-    )
+    st.subheader("Concentration vs removal")
+    st.caption("One dot = one sub one day. Up-right cluster = both high.")
     scatter_df = df_m.copy()
     scatter_df["top3_pct"] = scatter_df["top3_pct"] * 100
     scatter_df["removed_pct"] = scatter_df["removed_pct"] * 100
@@ -86,6 +79,6 @@ def render(conn, today: str, cm: dict) -> None:
         opacity=0.6,
     ), width="stretch")
 
-    st.subheader("How unusual is today?")
-    st.caption("Numbers far from zero = unusual. Positive = higher than normal.")
+    st.subheader("Z-scores vs usual")
+    st.caption("Distance from 0 = how weird the day is for that sub.")
     st.dataframe(metrics.add_z_scores(df_m), width="stretch")

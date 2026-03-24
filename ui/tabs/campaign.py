@@ -13,31 +13,17 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("Campaign Detector")
-    st.markdown(
-        "This tab combines **6 independent signals** into a single suspicion score "
-        "for every active user. A normal person might score high on one signal. "
-        "Someone who scores high on 3+ is very likely automated or coordinated."
+    st.caption(
+        "Heuristic score from 6 signals (percentiles vs other users in the window). "
+        "Not proof of anything."
     )
-    with st.expander("How does the scoring work?"):
-        st.markdown("""
-**Each user gets scored 0-100 on six signals** (percentile rank among all active users):
-
-| Signal | What it measures | Why it matters |
-|--------|-----------------|----------------|
-| **Volume** | Share of all posts in the sub | Outsized content share |
-| **Burst rate** | Rapid-fire posting events per day | Faster than human |
-| **Multi-sub** | Number of tracked subs they post in | Cross-community campaigns |
-| **Schedule entropy** | How evenly spread their posting hours are | Bots post around the clock |
-| **Domain concentration** | % of posts linking to their #1 site | Pushing one source |
-| **Removal immunity** | How far below avg their removal rate is | Protected accounts |
-
-The **composite score** is the average of all 6 percentiles. **Signals fired** counts
-how many of the 6 are above the 75th percentile.
-
-**Coordination detection** (below) is separate. It finds *pairs* of users
-who keep posting within 5 minutes of each other, which suggests sock puppets
-or a coordinated op.
-""")
+    with st.expander("Signals (short version)"):
+        st.markdown(
+            "- Volume, burst rate, multi-sub count, hour entropy, domain concentration, removal gap\n"
+            "- **Composite** = average of those percentiles. **Signals fired** = how many are >= p75\n"
+            "- **Pairs** below = often post within 5 min of each other (separate from the score)\n\n"
+            "Full write-up: **README** (Campaign detector section)."
+        )
 
     sub_cd = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="cd_sub")
     days_cd = st.slider("Days to analyze", 7, 180, 30, key="cd_days")
@@ -107,12 +93,8 @@ or a coordinated op.
         st.plotly_chart(fig_radar, width="stretch")
 
     st.divider()
-    st.subheader("Coordinated Pairs")
-    st.markdown(
-        "Users who repeatedly post within **5 minutes** of each other "
-        "might be the same person or working together. "
-        "This checks every pair of active users for suspicious timing overlaps."
-    )
+    st.subheader("Coordinated pairs")
+    st.caption("Same-window posts across different authors (see config for window).")
     coord = metrics.coordination_pairs(df_cd)
     if coord.empty:
         st.success("No suspicious timing pairs found.")
@@ -144,7 +126,7 @@ or a coordinated op.
             x=[nx[ia], nx[ib]], y=[ny[ia], ny[ib]], mode="lines",
             line=dict(width=width, color="rgba(200,50,50,0.4)"),
             hoverinfo="text",
-            text=f"{r['user_a']} ↔ {r['user_b']}: {r['coincidences']}x",
+            text=f"{r['user_a']} <-> {r['user_b']}: {r['coincidences']}x",
             showlegend=False,
         ))
     fig_net.add_trace(go.Scatter(

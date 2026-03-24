@@ -10,11 +10,7 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("Who Gets to Post?")
-    st.markdown(
-        "Some subreddits use flair to gatekeep. In r/Conservative, many threads are "
-        "'Flaired Users Only' -- only pre-approved users can participate. "
-        "This tab shows which flairs dominate and whether unfaired posts get removed more."
-    )
+    st.caption("Flair mix and removal by flair (e.g. flaired-only threads on some subs).")
     sub_fl = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="fl_sub")
     days_fl = st.slider("Days to look back", 7, 180, 30, key="fl_days")
     df_fl = helpers.posts_last_days(conn, sub_fl, days_fl, today)

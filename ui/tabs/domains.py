@@ -10,11 +10,7 @@ from ui import helpers
 def render(conn, today: str, cm: dict) -> None:
     _ = cm
     st.header("Where Do the Links Go?")
-    st.markdown(
-        "Every link post points to a website. If a subreddit's content comes from "
-        "the same 3 sites, that's a sign of narrow sourcing or astroturfing. "
-        "Also shows which domains get nuked the most."
-    )
+    st.caption("Link posts only for domain stats. Bottom: domains hitting multiple subs.")
     sub_dom = st.selectbox("Pick a subreddit", config.SUBREDDITS, key="dom_sub")
     days_dom = st.slider("Days to look back", 7, 180, 30, key="dom_days")
     start_dom = helpers.utc_start_date(days_dom)
@@ -48,8 +44,7 @@ def render(conn, today: str, cm: dict) -> None:
             st.info("No link posts found.")
 
     st.divider()
-    st.subheader("Compare: which domains overlap across subreddits?")
-    st.caption("Domains that appear in multiple subs may indicate cross-posted campaigns.")
+    st.subheader("Domains across subs")
     df_dom_all = db.get_all_posts(start_dom, today, conn)
     if df_dom_all.empty:
         return
